@@ -1,0 +1,25 @@
+---
+- name: NGINX | Install Nginx
+  become: true
+  ansible.builtin.yum:
+    name: nginx
+    state: present
+  notify: start-nginx
+- name: NGINX | Create general config
+  become: true
+  template:
+    src: templates/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    mode: 0644
+  notify: reload-nginx
+
+- name: Lighthouse | Install Git
+  become: true
+  ansible.builtin.yum:
+    name: git
+    state: present
+- name: Lighthouse | Clone repo
+  ansible.builtin.command: "git clone https://github.com/VKCOM/lighthouse"
+- name: Lighthouse | Copy lighthouse files
+  become: true
+  ansible.builtin.command: "cp -rf /home/damir/lighthouse/. /usr/share/nginx/html"
